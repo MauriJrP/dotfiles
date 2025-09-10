@@ -7,13 +7,13 @@ SHELL := /bin/zsh
 STOW_DIR := stow
 STOW_PKGS := zsh tmux ghostty git # nvim
 
-.PHONY: bootstrap brew brew-bundle devtools stow zsh-omz zsh-plugins zsh-fzf shells nvim tmux ghostty macos java pyenv-install
+.PHONY: bootstrap brew brew-bundle devtools stow zsh-omz zsh-plugins zsh-fzf shells nvim tmux ghostty macos java pyenv-install ssh-key
 
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | sed 's/:.*##/ ->/' | sort
 
-bootstrap: xcode brew brew-bundle stow fonts shells devtools nvim tmux ghostty macos java pyenv-install zsh-plugins zsh-fzf ## Full first-time setup
+bootstrap: xcode brew brew-bundle stow fonts shells devtools nvim tmux ghostty macos java pyenv-install zsh-plugins zsh-fzf ssh-key ## Full first-time setup
 
 xcode: ## Install Xcode CLT (no-op if present)
 	@xcode-select -p >/dev/null 2>&1 || xcode-select --install || true
@@ -131,4 +131,13 @@ macos: ## Apply macOS defaults (skips if file missing)
 	else \
 	  echo "Skipping macOS defaults (no macos.sh present)."; \
 	fi
+
+ssh-key: ## Generate a new SSH key for GitHub (idempotent)
+	@[ -f $$HOME/.ssh/id_ed25519 ] || ssh-keygen -t ed25519 -C "maurijrp2001@gmail.com" -f $$HOME/.ssh/id_ed25519 -N ''
+	@eval $$(ssh-agent -s); ssh-add $$HOME/.ssh/id_ed25519
+	@echo "→ Public key to add in GitHub:"
+	@echo "---------------------------------------------------"
+	@cat $$HOME/.ssh/id_ed25519.pub
+	@echo "---------------------------------------------------"
+	@echo "Paste this into https://github.com/settings/keys"
 
