@@ -13,7 +13,7 @@ STOW_PKGS := zsh tmux ghostty git # nvim
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | sed 's/:.*##/ ->/' | sort
 
-bootstrap: xcode brew brew-bundle stow fonts shells devtools nvim tmux ghostty macos java pyenv-install ## Full first-time setup
+bootstrap: xcode brew brew-bundle stow fonts shells devtools nvim tmux ghostty macos java pyenv-install zsh-plugins zsh-fzf ## Full first-time setup
 
 xcode: ## Install Xcode CLT (no-op if present)
 	@xcode-select -p >/dev/null 2>&1 || xcode-select --install || true
