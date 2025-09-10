@@ -8,6 +8,8 @@
     editor = nvim
     autocrlf = input
     pager = delta
+    excludesfile = ~/.gitignore_global
+
 
 [color]
     ui = auto
