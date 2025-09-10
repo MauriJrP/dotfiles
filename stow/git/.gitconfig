@@ -1,0 +1,40 @@
+# ~/.gitconfig
+
+[user]
+    name = Mauricio Rodriguez
+    email = maurijrp2001@gmail.com
+
+[core]
+    editor = nvim
+    autocrlf = input
+    pager = delta
+
+[color]
+    ui = auto
+
+[alias]
+    st = status -sb
+    co = checkout
+    br = branch
+    ci = commit
+    lg = log --oneline --graph --decorate
+    amend = commit --amend --no-edit
+    last = log -1 HEAD
+
+[delta]
+    navigate = true
+    line-numbers = true
+    side-by-side = true
+
+[init]
+    defaultBranch = main
+
+[merge]
+    conflictstyle = zdiff3
+
+[pull]
+    rebase = false
+
+[push]
+    default = current
+
