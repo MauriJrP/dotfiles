@@ -11,6 +11,7 @@ brew "jq"
 brew "direnv"
 brew "asdf"        # runtime/toolchain manager
 brew "gh"
+brew "git-delta"
 
 cask "ghostty"
 cask "font-jetbrains-mono-nerd-font"

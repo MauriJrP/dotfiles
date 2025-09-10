@@ -4,6 +4,9 @@
 BREW := $(shell test -x /opt/homebrew/bin/brew && echo /opt/homebrew/bin/brew || echo /usr/local/bin/brew)
 SHELL := /bin/zsh
 
+STOW_DIR := stow
+STOW_PKGS := zsh tmux ghostty git # nvim
+
 .PHONY: bootstrap brew brew-bundle devtools stow zsh-omz zsh-plugins zsh-fzf shells nvim tmux ghostty macos java pyenv-install
 
 
@@ -29,18 +32,36 @@ brew: ## Install Homebrew (no-op if present)
 brew-bundle: ## Install apps from Brewfile
 	@eval $$($(BREW) shellenv); HOMEBREW_NO_AUTO_UPDATE=1 $(BREW) bundle --file=./Brewfile
 
-
+# stow: ## Symlink dotfiles into $$HOME using stow (backs up conflicts)
+# 	@eval $$($(BREW) shellenv); \
+# 	mkdir -p $$HOME/.dotfiles_backups; \
+# 	for f in .zshrc .tmux.conf .config/ghostty/config; do \
+# 	  [ -e $$HOME/$$f ] && [ ! -L $$HOME/$$f ] && mv $$HOME/$$f $$HOME/.dotfiles_backups/  || true; \
+# 	done; \
+# 	stow --no-folding --dir stow --target $$HOME zsh tmux ghostty
+#
 stow: ## Symlink dotfiles into $$HOME using stow (backs up conflicts)
+	@echo "→ Stowing: $(STOW_PKGS) from $(STOW_DIR) into $$HOME"
 	@eval $$($(BREW) shellenv); \
 	mkdir -p $$HOME/.dotfiles_backups; \
-	for f in .zshrc .tmux.conf .config/ghostty/config; do \
-	  [ -e $$HOME/$$f ] && [ ! -L $$HOME/$$f ] && mv $$HOME/$$f $$HOME/.dotfiles_backups/  || true; \
+	for f in \
+	  .zshrc \
+	  .tmux.conf \
+	  .config/ghostty/config \
+	  .gitconfig \
+	  .config/git/config \
+	; do \
+	  if [ -e "$$HOME/$$f" ] && [ ! -L "$$HOME/$$f" ]; then \
+	    echo "  backing up $$HOME/$$f -> $$HOME/.dotfiles_backups/"; \
+	    mkdir -p "$$HOME/.dotfiles_backups$$(dirname /$$f)"; \
+	    mv "$$HOME/$$f" "$$HOME/.dotfiles_backups/"; \
+	  fi; \
 	done; \
-	stow --no-folding --dir stow --target $$HOME zsh tmux ghostty
+	stow -v --no-folding --dir "$(STOW_DIR)" --target "$$HOME" $(STOW_PKGS)
 
 fonts: ## Install Nerd Font (JetBrains Mono by default)
-	@eval $$($(BREW) shellenv); $(BREW) tap homebrew/cask-fonts || true
-	@$(BREW) install --cask font-jetbrains-mono-nerd-font
+	@eval $$($(BREW) shellenv); \
+	$(BREW) install --cask font-jetbrains-mono-nerd-font || true
 
 shells: ## Set login shell to best available zsh
 	@eval $$($(BREW) shellenv); \
@@ -50,7 +71,6 @@ shells: ## Set login shell to best available zsh
 	[ -x "$$BREW_ZSH" ] && USE_ZSH="$$BREW_ZSH"; \
 	grep -q "$$USE_ZSH" /etc/shells || echo "$$USE_ZSH" | sudo tee -a /etc/shells >/dev/null; \
 	chsh -s "$$USE_ZSH" || true
-
 
 devtools: ## CLI you likely want everywhere
 	@eval $$($(BREW) shellenv); $(BREW) install coreutils gnu-sed gnu-tar wget curl jq ripgrep fd bat eza zoxide direnv tmux git gh asdf
@@ -67,17 +87,6 @@ java: ## Install a JDK and Maven; set JAVA_HOME via /usr/libexec/java_home
 pyenv-install: ## Install pyenv
 	@eval $$($(BREW) shellenv); $(BREW) install pyenv || true
 
-# zsh-plugins: ## Install OMZ plugins (brew + symlinks + git clone)
-# 	@eval $$($(BREW) shellenv); \
-# 	$(BREW) install zsh-autosuggestions zsh-syntax-highlighting || true; \
-# 	ZSH_CUSTOM="$${ZSH_CUSTOM:-$${ZSH:-$$HOME/.oh-my-zsh}/custom}"; \
-# 	mkdir -p "$$ZSH_CUSTOM/plugins"; \
-# 	LNA="$$($(BREW) --prefix)/share/zsh-autosuggestions"; \
-# 	LNS="$$($(BREW) --prefix)/share/zsh-syntax-highlighting"; \
-# 	[ -L "$$ZSH_CUSTOM/plugins/zsh-autosuggestions" ] || ln -s "$$LNA" "$$ZSH_CUSTOM/plugins/zsh-autosuggestions"; \
-# 	[ -L "$$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ] || ln -s "$$LNS" "$$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"; \
-# 	[ -d "$$ZSH_CUSTOM/plugins/you-should-use" ] || git clone https://github.com/MichaelAquilina/zsh-you-should-use "$$ZSH_CUSTOM/plugins/you-should-use"
-
 zsh-plugins: ## Install OMZ plugins by cloning repos (OMZ-friendly)
 	@ZSH_DIR="$${ZSH:-$$HOME/.oh-my-zsh}"; \
 	ZSHC="$${ZSH_CUSTOM:-$$ZSH_DIR/custom}"; \
@@ -93,11 +102,6 @@ zsh-fzf: ## Enable fzf keybindings & completion
 	FZF_PREFIX="$$( $(BREW) --prefix fzf )"; \
 	"$$FZF_PREFIX"/install --no-bash --no-fish --key-bindings --completion --no-update-rc
 
-# nvim: ## Install NVChad and your custom layer
-# 	@[ -d "$$HOME/.config/nvim" ] || git clone https://github.com/NvChad/starter "$$HOME/.config/nvim"
-# 	@# If you prefer full NVChad: git clone https://github.com/NvChad/NvChad "$$HOME/.config/nvim" --depth 1
-# 	@# Ensure your custom files are stowed into ~/.config/nvim/lua/custom
-#
 nvim: ## Install Neovim (PATH) + NVChad + your custom layer
 	@eval $$($(BREW) shellenv); \
 	$(BREW) install neovim || true; \
@@ -109,11 +113,6 @@ nvim: ## Install Neovim (PATH) + NVChad + your custom layer
 	  stow --no-folding --dir stow --target $$HOME nvim; \
 	fi
 
-
-# tmux: ## TPM and sensible defaults
-# 	@[ -d "$$HOME/.tmux/plugins/tpm" ] || git clone https://github.com/tmux-plugins/tpm "$$HOME/.tmux/plugins/tpm"
-# 	@# Plugins install on first tmux start: prefix + I
-
 tmux: ## TPM and config
 	@[ -d $$HOME/.tmux/plugins/tpm ] || git clone https://github.com/tmux-plugins/tpm $$HOME/.tmux/plugins/tpm
 	@# If a tmux server is already running, reload config
@@ -123,6 +122,13 @@ ghostty: ## Ensure Ghostty exists (from Brewfile) and pick font
 	@echo "Set Ghostty font in stow/ghostty/.config/ghostty/config then re-stow."
 	@true
 
-macos: ## Optional macOS defaults (safe to skip)
-	@./macos.sh || true
+# macos: ## Optional macOS defaults (safe to skip)
+# 	@./macos.sh || true
+
+macos: ## Apply macOS defaults (skips if file missing)
+	@if [ -f ./macos.sh ]; then \
+	  bash ./macos.sh; \
+	else \
+	  echo "Skipping macOS defaults (no macos.sh present)."; \
+	fi
 
