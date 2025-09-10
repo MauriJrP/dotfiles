@@ -1,0 +1,49 @@
+# History, colors, mouse
+set -g mouse on
+set -g history-limit 50000
+set -g default-terminal "tmux-256color"
+set -as terminal-overrides ',xterm-256color:RGB'
+
+# Prefix key = Ctrl + Space
+unbind C-b
+unbind C-a
+set -g prefix C-Space
+bind C-Space send-prefix
+
+# Splits
+bind | split-window -h
+bind - split-window -v
+
+# Reload config
+bind r source-file ~/.tmux.conf \; display "Reloaded!"
+
+# TPM (plugin manager)
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+run '~/.tmux/plugins/tpm/tpm'
+
+# Theme
+set -g @plugin 'catppuccin/tmux'
+
+# Choose flavour (latte, frappe, macchiato, mocha)
+set -g @catppuccin_flavour 'mocha'
+
+# Status bar
+set -g status on
+set -g status-interval 5
+set -g status-justify centre
+
+# Transparent background (inherit terminal)
+set -g status-bg default
+set -g status-fg white
+
+# Window list
+set -g window-status-format " #I:#W "
+set -g window-status-current-format " #[bold,fg=green]#I:#W#[default] "
+
+# Left side (session name)
+set -g status-left " #[fg=cyan]#S #[default]"
+
+# Right side (time + date)
+set -g status-right " %H:%M %d-%b "

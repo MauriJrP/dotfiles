@@ -1,0 +1,16 @@
+brew "stow"
+brew "git"
+brew "tmux"
+brew "fzf"
+brew "ripgrep"
+brew "fd"
+brew "bat"
+brew "eza"
+brew "zoxide"
+brew "jq"
+brew "direnv"
+brew "asdf"        # runtime/toolchain manager
+brew "gh"
+
+cask "ghostty"
+cask "font-jetbrains-mono-nerd-font"
