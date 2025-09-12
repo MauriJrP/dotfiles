@@ -9,6 +9,7 @@ vim.api.nvim_create_autocmd("User", {
   callback = function()
     -- (still load any other custom code if you want)
     pcall(require, "custom.init")
+    pcall(require, "custom.lsp")
 
     -- Open nvim-tree on start (no file) or when starting on a dir
     -- local ok, api = pcall(require, "nvim-tree.api")
