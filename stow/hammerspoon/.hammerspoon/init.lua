@@ -40,6 +40,22 @@ bindRepeat({"ctrl","alt","cmd"}, "Down", function()
   win:setFrame(f)
 end)
 
+-- Move Left
+bindRepeat({"ctrl","alt","cmd"}, "Left", function()
+  local win = hs.window.focusedWindow(); if not win then return end
+  local f, sf = win:frame(), win:screen():frame()
+  f.x = math.max(f.x - step, sf.x)
+  win:setFrame(f)
+end)
+
+-- Move Up
+bindRepeat({"ctrl","alt","cmd"}, "Up", function()
+  local win = hs.window.focusedWindow(); if not win then return end
+  local f, sf = win:frame(), win:screen():frame()
+  f.y = math.max(f.y - step, sf.y)
+  win:setFrame(f)
+end)
+
 -- 🔹 Resize controls (ctrl+alt + arrows)
 -- Shrink width (Left), Expand width (Right)
 bindRepeat({"ctrl","alt"}, "Left", function()
