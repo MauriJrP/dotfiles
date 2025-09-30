@@ -5,5 +5,10 @@ return {
   { "neovim/nvim-lspconfig" },
   -- optional: better TS server (vtsls)
   { "yioneko/nvim-vtsls" },
+  {
+    "ellisonleao/glow.nvim",
+    config = true,
+    cmd = "Glow"
+  },
 }
 

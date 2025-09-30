@@ -30,7 +30,18 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 -- (optional) M.mappings = require "custom.mappings"
--- (optional) M.plugins  = "custom.plugins"
+M.plugins  = {
+  { "williamboman/mason.nvim" },
+  { "williamboman/mason-lspconfig.nvim" },
+  { "neovim/nvim-lspconfig" },
+  -- optional: better TS server (vtsls)
+  { "yioneko/nvim-vtsls" },
+  {
+    "ellisonleao/glow.nvim",
+    config = true,
+    cmd = "Glow"
+  },
+}
 
 return M
 

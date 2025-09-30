@@ -5,7 +5,7 @@ BREW := $(shell test -x /opt/homebrew/bin/brew && echo /opt/homebrew/bin/brew ||
 SHELL := /bin/zsh
 
 STOW_DIR := stow
-STOW_PKGS := zsh tmux ghostty git nvim
+STOW_PKGS := zsh tmux ghostty git nvim hammerspoon
 
 .PHONY: bootstrap brew brew-bundle devtools stow zsh-omz zsh-plugins zsh-fzf shells nvim tmux ghostty macos java pyenv-install ssh-key
 

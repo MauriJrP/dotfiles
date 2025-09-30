@@ -1,8 +1,12 @@
 -- Reuse NvChad defaults
-local lspconfig = require "lspconfig"
-local nvlsp = require "nvchad.configs.lspconfig"
-local on_attach = nvlsp.on_attach
-local capabilities = nvlsp.capabilities
+local ok, nvlsp = pcall(require, "nvchad.configs.lspconfig")
+local on_attach = ok and nvlsp.on_attach or function() end
+local capabilities = ok and nvlsp.capabilities or vim.lsp.protocol.make_client_capabilities()
+
+-- local lspconfig = require "lspconfig"
+-- local nvlsp = require "nvchad.configs.lspconfig"
+-- local on_attach = nvlsp.on_attach
+-- local capabilities = nvlsp.capabilities
 
 -- ---------- Python ----------
 -- Pyright: types, defs, hover, etc.
@@ -14,10 +18,7 @@ lspconfig.pyright.setup {
   },
 }
 -- Ruff LSP: fast linting/fixes
-lspconfig.ruff_lsp.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-}
+lspconfig.ruff.setup    { on_attach = on_attach, capabilities = capabilities }
 
 -- ---------- Java ----------
 -- JDTLS via lspconfig (basic; good enough for start)
@@ -40,7 +41,7 @@ if has_vtsls then
     },
   }
 else
-  lspconfig.tsserver.setup {
+  lspconfig.ts_ls.setup {
     on_attach = on_attach,
     capabilities = capabilities,
   }
