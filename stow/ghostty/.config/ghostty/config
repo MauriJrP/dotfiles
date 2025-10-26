@@ -18,6 +18,3 @@ quit-after-last-window-closed = true
 # Optional: start tmux automatically (comment out if you prefer plain shell)
 # command = tmux new -A -s main
 
-remember-window-size = true
-remember-window-position = true
-
